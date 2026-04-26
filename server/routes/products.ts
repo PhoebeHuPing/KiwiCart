@@ -1,15 +1,32 @@
 import express from 'express'
 import * as db from '../db/index.ts'
+import { fetchPaknsavePrices } from '../services/paknsave.ts'
+import { fetchNewWorldPrices } from '../services/newworld.ts'
 
 const router = express.Router()
 
 router.get('/compare', async (req, res) => {
   const searchTerm = (req.query.q as string) || ''
   try {
-    const products = await db.getComparePrices(searchTerm)
-    res.json(products)
+    // 1. Get existing database results (for historical or other stores)
+    const dbProducts = await db.getComparePrices(searchTerm)
+
+    // 2. Fetch real-time prices from Foodstuffs brands in parallel
+    const [pnsResults, nwResults] = await Promise.all([
+      fetchPaknsavePrices(searchTerm),
+      fetchNewWorldPrices(searchTerm)
+    ])
+
+    // 3. Combine all results and sort by price
+    const combined = [
+      ...dbProducts, 
+      ...pnsResults, 
+      ...nwResults
+    ].sort((a, b) => a.price - b.price)
+
+    res.json(combined)
   } catch (error) {
-    console.error(error)
+    console.error('Comparison route failed:', error)
     res.status(500).send('Something went wrong')
   }
 })

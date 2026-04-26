@@ -1,66 +1,26 @@
-# Project Overview
+# KiwiCart - NZ Supermarket Price Sharing App (Community-Driven)
 
-This is a full-stack TypeScript project for creating a "collection" application. It uses React for the frontend and Node.js with Express for the backend. The database is managed with Knex.js and SQLite.
+## Project Mission
+A community-driven platform designed to tackle the New Zealand Cost of Living Crisis. KiwiCart empowers users to compare supermarket prices across different brands (Pak'nSave, New World, Woolworths) using location-based search and AI-driven shopping advice.
 
-## Building and Running
+## Tech Stack (NZ Market Standard)
+- **Frontend**: React (TS), Tailwind CSS, Vite
+- **Backend**: Node.js (Express/TS), Knex.js
+- **Database**: PostgreSQL (for Production on Render)
+- **AI**: Gemini AI (for Smart Shopping Advice)
+- **Services**: Auth0 (Authentication), Google Maps API (Location)
+- **Testing**: Supertest, Vitest
+- **Documentation**: Swagger (OpenAPI)
 
-### Development
+## Current Sprint Goal: 1-Week Refactoring
+Refactor the project from a local product list to a multi-store price comparison platform with AI features.
 
-Prompt the user to run the development server themselves in a separate terminal window.
+## Development Commands
+- `npm run dev`: Start development server
+- `npm test`: Run tests (Vitest/Supertest)
+- `npm run knex migrate:latest`: Run database migrations
 
-```bash
-npm run dev
-```
-
-### Production
-
-To build the application for production, use the following command:
-
-```bash
-npm run build
-```
-
-To start the application in production mode, use the following command:
-
-```bash
-npm start
-```
-
-### Testing
-
-To run the tests, use the following command:
-
-```bash
-npm test -- --run
-```
-
-### Database
-
-To run database migrations, use the following command:
-
-```bash
-npm run knex migrate:latest
-```
-
-To seed the database, use the following command:
-
-```bash
-npm run knex seed:run
-```
-
-## Development Conventions
-
-*   **Linting:** The project uses ESLint for linting. To run the linter, use the command `npm run lint`.
-*   **Formatting:** The project uses Prettier for code formatting. To format the code, use the command `npm run format`.
-*   **API Routes:** API routes should be added in `server/server.ts`.
-*   **Frontend Components:** React components are located in the `client/components` directory.
-*   **Data Fetching:** The frontend uses React Query for data fetching. API client functions are intended to be placed in the `client/apis` directory.
-*   **Styling:** The project uses CSS for styling. The main stylesheet is located at `client/styles/index.css`.
-
-## PromptKit Quick Reference
-- Review the available artefacts when the student requests them:
-  - Protocol: `promptkit/protocols/setup.md` — instructions for updating these CLI briefings.
-  - Workflow: `promptkit/workflows/tutor.md` — guide for tutoring/explanation sessions.
-  - Workflow: `promptkit/workflows/reflect.md` — guide for documenting outcomes and next steps.
-- Student notes live in `promptkit/notes/`; The table in `progress-journal.md` is main place to update with reflections. Instructor Activities are in `promptkit/activities/` (read-only).
-- When new workflows arrive, expect additional files under `promptkit/workflows/`.
+## 如何继续 (How to Resume)
+如果你开启了新的对话窗口并想继续之前的任务，只需问我：
+- "请阅读进度日志，我们继续 KiwiCart 的重构。"
+- 或者简单的问："下一步该做什么？"
