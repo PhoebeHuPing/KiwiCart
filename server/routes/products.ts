@@ -6,6 +6,8 @@ import { fetchNewWorldPrices } from '../services/newworld.ts'
 const router = express.Router()
 
 router.get('/compare', async (req, res) => {
+  console.log('jinlaile')
+
   const searchTerm = (req.query.q as string) || ''
   try {
     // 1. Get existing database results (for historical or other stores)
@@ -14,15 +16,13 @@ router.get('/compare', async (req, res) => {
     // 2. Fetch real-time prices from Foodstuffs brands in parallel
     const [pnsResults, nwResults] = await Promise.all([
       fetchPaknsavePrices(searchTerm),
-      fetchNewWorldPrices(searchTerm)
+      fetchNewWorldPrices(searchTerm),
     ])
 
     // 3. Combine all results and sort by price
-    const combined = [
-      ...dbProducts, 
-      ...pnsResults, 
-      ...nwResults
-    ].sort((a, b) => a.price - b.price)
+    const combined = [...dbProducts, ...pnsResults, ...nwResults].sort(
+      (a, b) => a.price - b.price,
+    )
 
     res.json(combined)
   } catch (error) {
