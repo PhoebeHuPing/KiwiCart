@@ -9,15 +9,21 @@ router.get('/compare', async (req, res) => {
   console.log('jinlaile')
 
   const searchTerm = (req.query.q as string) || ''
+  console.log('收到搜索请求')
+
   try {
     // 1. Get existing database results (for historical or other stores)
     const dbProducts = await db.getComparePrices(searchTerm)
+    console.log('数据库返回了')
 
     // 2. Fetch real-time prices from Foodstuffs brands in parallel
+
     const [pnsResults, nwResults] = await Promise.all([
       fetchPaknsavePrices(searchTerm),
       fetchNewWorldPrices(searchTerm),
     ])
+    // console.log(pnsResults)
+    console.log(nwResults)
 
     // 3. Combine all results and sort by price
     const combined = [...dbProducts, ...pnsResults, ...nwResults].sort(
