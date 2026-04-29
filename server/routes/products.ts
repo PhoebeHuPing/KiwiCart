@@ -6,10 +6,8 @@ import { fetchNewWorldPrices } from '../services/newworld.ts'
 const router = express.Router()
 
 router.get('/compare', async (req, res) => {
-  console.log('jinlaile')
-
-  const searchTerm = (req.query.q as string) || ''
-  console.log('收到搜索请求')
+  const searchTerm = (req.query.q as string) || 'Milk'
+  console.log(`Searching for: ${searchTerm}`)
 
   try {
     // 1. Get existing database results (for historical or other stores)

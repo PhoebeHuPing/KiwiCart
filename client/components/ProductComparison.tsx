@@ -16,30 +16,67 @@ function ProductComparison() {
   } = useQuery({
     queryKey: ['compare', debouncedSearchTerm],
     queryFn: () => getComparePrices(debouncedSearchTerm),
-    enabled: debouncedSearchTerm.length > 0,
+    // REMOVED: enabled: debouncedSearchTerm.length > 0,
   })
+
+  const trendingCategories = [
+    { name: 'Milk', icon: '🥛' },
+    { name: 'Bread', icon: '🍞' },
+    { name: 'Eggs', icon: '🥚' },
+    { name: 'Butter', icon: '🧈' },
+    { name: 'Apples', icon: '🍎' },
+  ]
 
   return (
     <div className="min-h-screen bg-background pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 搜索区域 */}
-        <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 focus-within:ring-2 focus-within:ring-kiwi/20 transition-all mb-8">
-          <span className="text-2xl ml-2">🔍</span>
-          <input
-            type="text"
-            className="flex-1 bg-transparent border-none focus:ring-0 text-lg outline-none placeholder:text-gray-400"
-            placeholder="Search for a product (e.g. Milk, Bread, Steak)..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {isLoading && (
-            <div className="w-6 h-6 border-2 border-kiwi border-t-transparent rounded-full animate-spin"></div>
-          )}
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 focus-within:ring-2 focus-within:ring-kiwi/20 transition-all">
+            <span className="text-2xl ml-2">🔍</span>
+            <input
+              type="text"
+              className="flex-1 bg-transparent border-none focus:ring-0 text-lg outline-none placeholder:text-gray-400"
+              placeholder="Search for a product (e.g. Milk, Bread, Steak)..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {isLoading && (
+              <div className="w-6 h-6 border-2 border-kiwi border-t-transparent rounded-full animate-spin"></div>
+            )}
+          </div>
+
+          {/* 热门分类快捷标签 */}
+          <div className="flex flex-wrap gap-2">
+            {trendingCategories.map((cat) => (
+              <button
+                key={cat.name}
+                onClick={() => setSearchTerm(cat.name)}
+                className="px-4 py-2 bg-white rounded-full text-sm font-medium text-gray-600 border border-gray-100 hover:border-kiwi hover:text-kiwi transition-all shadow-sm flex items-center gap-2"
+              >
+                <span>{cat.icon}</span>
+                {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* 左侧结果列表 */}
           <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-2xl font-bold text-kiwi-dark mb-4 flex items-center gap-2">
+              {debouncedSearchTerm ? (
+                <>
+                  <span className="text-xl">🔎</span> Results for &quot;
+                  {debouncedSearchTerm}&quot;
+                </>
+              ) : (
+                <>
+                  <span className="text-xl">🔥</span> Daily Essentials
+                </>
+              )}
+            </h2>
+
             {isError && (
               <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100">
                 ⚠️ Error: {error.message}
@@ -64,7 +101,7 @@ function ProductComparison() {
                       className="max-w-full max-h-full object-contain mix-blend-multiply"
                       loading="lazy"
                     />
-                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full p-1.5 shadow-md border border-gray-100">
+                    <div className="absolute -bottom-3 -right-3 w-14 h-14 bg-white rounded-full p-2 shadow-lg border-2 border-white ring-1 ring-gray-100">
                       <img
                         src={item.logo_url}
                         alt={item.supermarket_name}
