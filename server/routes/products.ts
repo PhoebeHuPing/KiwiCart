@@ -12,7 +12,6 @@ router.get('/compare', async (req, res) => {
   try {
     // 1. Get existing database results (for historical or other stores)
     const dbProducts = await db.getComparePrices(searchTerm)
-    console.log('数据库返回了')
 
     // 2. Fetch real-time prices from Foodstuffs brands in parallel
 
