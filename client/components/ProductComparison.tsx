@@ -8,6 +8,7 @@ function ProductComparison() {
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500)
   const [showDropdown, setShowDropdown] = useState(false)
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
 
   const {
     data: products,
@@ -19,6 +20,25 @@ function ProductComparison() {
     queryFn: () => getComparePrices(debouncedSearchTerm),
     // REMOVED: enabled: debouncedSearchTerm.length > 0,
   })
+
+  // 将平铺的商品数组按名字分组
+  const groupedProducts = products?.reduce((acc: any[], current) => {
+    const existingProduct = acc.find(
+      (p) => p.product_name === current.product_name,
+    )
+
+    if (existingProduct) {
+      existingProduct.options.push(current)
+      existingProduct.options.sort((a: any, b: any) => a.price - b.price)
+    } else {
+      acc.push({
+        product_name: current.product_name,
+        image_url: current.image_url,
+        options: [current],
+      })
+    }
+    return acc
+  }, [])
 
   const trendingCategories = [
     { name: 'Milk', icon: '🥛' },
@@ -181,58 +201,114 @@ function ProductComparison() {
             )}
 
             <div className="flex flex-col gap-4">
-              {products?.map((item: PriceComparisonData, index: number) => (
-                <div
-                  key={index}
-                  className={`bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-6 shadow-sm border-l-4 transition-all hover:shadow-md ${
-                    index === 0
-                      ? 'border-kiwi bg-kiwi-light/20'
-                      : 'border-transparent hover:border-kiwi/30'
-                  }`}
-                >
-                  {/* 商品图片容器 */}
-                  <div className="relative w-32 h-32 flex-shrink-0 bg-gray-50 rounded-xl p-2 flex items-center justify-center">
-                    <img
-                      src={item.image_url}
-                      alt={item.product_name}
-                      className="max-w-full max-h-full object-contain mix-blend-multiply"
-                      loading="lazy"
-                    />
-                    <div className="absolute -bottom-3 -right-3 w-14 h-14 bg-white rounded-full p-2 shadow-lg border-2 border-white ring-1 ring-gray-100">
-                      <img
-                        src={item.logo_url}
-                        alt={item.supermarket_name}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
+              {groupedProducts?.map((group: any, groupIdx: number) => {
+                const isExpanded = expandedIndex === groupIdx
+                const bestOption = group.options[0]
 
-                  {/* 商品详情 */}
-                  <div className="flex-1 text-center sm:text-left">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      {item.supermarket_name}
-                    </span>
-                    <h3 className="text-xl font-bold text-kiwi-dark leading-tight mt-1">
-                      {item.product_name}
-                    </h3>
-                    <p className="text-gray-500 text-sm mt-2 flex items-center justify-center sm:justify-start gap-1">
-                      <span className="text-xs">📍</span> {item.address}
-                    </p>
-                  </div>
+                return (
+                  <div
+                    key={groupIdx}
+                    className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all"
+                  >
+                    {/* 商品头部（点击触发展开/收起） */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedIndex(isExpanded ? null : groupIdx)
+                      }
+                      className="w-full flex flex-col sm:flex-row items-center gap-8 p-6 text-left hover:bg-gray-50/50 transition-colors"
+                    >
+                      <div className="w-40 h-40 flex-shrink-0 bg-gray-50 rounded-2xl p-4 shadow-inner">
+                        <img
+                          src={group.image_url}
+                          alt=""
+                          className="w-full h-full object-contain mix-blend-multiply"
+                        />
+                      </div>
 
-                  {/* 价格与标签 */}
-                  <div className="flex flex-col items-center sm:items-end min-w-[120px]">
-                    <span className="text-3xl font-black text-price">
-                      ${item.price.toFixed(2)}
-                    </span>
-                    {index === 0 && (
-                      <span className="mt-2 bg-kiwi text-white text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
-                        Cheapest
-                      </span>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-kiwi-dark">
+                          {group.product_name}
+                        </h3>
+                        <p className="text-gray-400 text-sm mt-1">
+                          Available at {group.options.length} supermarkets
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col items-center sm:items-end gap-1">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                          Best Price
+                        </span>
+                        <span className="text-2xl font-black text-price">
+                          ${bestOption.price.toFixed(2)}
+                        </span>
+                        <div
+                          className={`text-kiwi transition-transform duration-300 ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                        >
+                          ▼
+                        </div>
+                      </div>
+                    </button>
+
+                    {/* 下拉展开的价格对比区域 */}
+                    {isExpanded && (
+                      <div className="bg-gray-50/50 border-t border-gray-100 p-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                          Live Price Comparison
+                        </p>
+
+                        {group.options.map((option: any, optIdx: number) => (
+                          <div
+                            key={optIdx}
+                            className="flex items-center justify-between bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:border-kiwi/30 transition-all"
+                          >
+                            <div className="flex items-center gap-6">
+                              {/* 进一步放大的 Logo：w-20 (80px) */}
+                              <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center p-1">
+                                <img
+                                  src={option.logo_url}
+                                  alt={option.supermarket_name}
+                                  className="w-full h-full object-contain filter drop-shadow-sm"
+                                />
+                              </div>
+
+                              <div>
+                                <p className="font-black text-xl text-kiwi-dark tracking-tight">
+                                  {option.supermarket_name}
+                                </p>
+                                <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                                  <span className="text-xs">📍</span>{" "}
+                                  {option.address}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-6">
+                              <div className="text-right">
+                                <span className="text-2xl font-black text-kiwi-dark">
+                                  ${option.price.toFixed(2)}
+                                </span>
+                                {optIdx === 0 && (
+                                  <p className="text-[9px] text-kiwi font-bold uppercase tracking-tighter">
+                                    Best Choice
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* 精致的 SELECT 按钮 */}
+                              <button className="bg-kiwi-dark text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-kiwi hover:scale-105 transition-all shadow-sm">
+                                SELECT
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
 
               {/* 空结果提示 */}
               {!isLoading && products?.length === 0 && debouncedSearchTerm && (
