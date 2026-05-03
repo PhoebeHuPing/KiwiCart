@@ -9,13 +9,33 @@ KiwiCart is a full-stack price comparison application for New Zealand supermarke
 - **Search:** Quickly find specific products (e.g., "Milk", "Apple").
 - **Visual Feedback:** Highlights the cheapest option with a "Best Price!" badge.
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Technologies
 
-- **Frontend:** React, TypeScript, React Query, Vite.
-- **Backend:** Node.js, Express.
-- **Database:** SQLite3, Knex.js.
-- **Testing:** Vitest, Testing Library.
-- **Styling:** CSS3.
+### 🖥️ Frontend (Visuals & State)
+- ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) **React 18** - Component-based UI library
+- ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) **TypeScript** - Static typing for reliable code
+- ![React Query](https://img.shields.io/badge/React_Query-FF4154?style=flat-square&logo=react-query&logoColor=white) **TanStack Query** - Server-state management & caching
+- ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) **Tailwind CSS** - Utility-first styling framework
+- ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) **Vite** - Lightning fast build tool
+
+### ⚙️ Backend (Logic & APIs)
+- ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white) **Node.js** - JavaScript runtime
+- ![Express](https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white) **Express** - Minimalist web framework
+- ![Superagent](https://img.shields.io/badge/Superagent-EF5350?style=flat-square&logo=javascript&logoColor=white) **Superagent** - HTTP client for supermarket API scraping
+
+### 🗄️ Database (Storage)
+- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white) **PostgreSQL** - Production relational database
+- ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=flat-square&logo=sqlite&logoColor=white) **SQLite3** - Lightweight development database
+- ![Knex.js](https://img.shields.io/badge/Knex.js-E84545?style=flat-square&logo=knex.js&logoColor=white) **Knex.js** - SQL query builder & migration management
+
+### 🧪 Testing (Reliability)
+- ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white) **Vitest** - Modern Vite-native testing framework
+- ![Supertest](https://img.shields.io/badge/Supertest-41B883?style=flat-square&logo=node.js&logoColor=white) **Supertest** - Integration testing for HTTP endpoints
+- ![Testing Library](https://img.shields.io/badge/Testing_Library-E33332?style=flat-square&logo=testing-library&logoColor=white) **React Testing Library** - User-centric component testing
+- ![Nock](https://img.shields.io/badge/Nock-90A4AE?style=flat-square&logo=javascript&logoColor=white) **Nock** - HTTP request mocking for unit tests
+
+### 🤖 AI Integration
+- ![Gemini](https://img.shields.io/badge/Gemini_AI-8E44AD?style=flat-square&logo=google-gemini&logoColor=white) **Gemini AI** - Smart shopping advice & receipt analysis (Planned/In Progress)
 
 ## 🏁 Getting Started
 
