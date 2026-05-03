@@ -279,7 +279,7 @@ function ProductComparison() {
                                   {option.supermarket_name}
                                 </p>
                                 <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
-                                  <span className="text-xs">📍</span>{" "}
+                                  <span className="text-xs">📍</span>{' '}
                                   {option.address}
                                 </p>
                               </div>
