@@ -38,14 +38,10 @@ async function getNewWorldToken(): Promise<string> {
 export async function fetchNewWorldPrices(
   searchTerm: string,
 ): Promise<PriceComparisonData[]> {
-  console.log('开始搜索')
-
   try {
     let token = await getNewWorldToken()
-    console.log('确认token存在')
 
     let response = await makeSearchRequest(searchTerm, token)
-    console.log('响应状态')
 
     // Handle token expiration (retry once)
     if (response.status === 401) {
@@ -56,7 +52,6 @@ export async function fetchNewWorldPrices(
     }
 
     const products = response.body.products || []
-    console.log(products)
 
     return products.map((p: any) => {
       const simpleId = p.productId.split('-')[0]
@@ -83,8 +78,6 @@ export async function fetchNewWorldPrices(
  * Helper to perform the actual HTTP POST to the search API.
  */
 async function makeSearchRequest(searchTerm: string, token: string) {
-  console.log('jinlailema')
-
   return request
     .post('https://api-prod.newworld.co.nz/v1/edge/search/paginated/products')
     .set('Authorization', `Bearer ${token}`)
