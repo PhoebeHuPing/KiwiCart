@@ -32,6 +32,23 @@ async function getNewWorldToken(): Promise<string> {
   }
 }
 
+interface NewWorldProduct {
+  productId: string
+  name: string
+  images?: {
+    primaryImages?: {
+      '400px'?: string
+    }
+  }
+  singlePrice?: {
+    price?: number
+  }
+}
+
+interface NewWorldSearchResponse {
+  products: NewWorldProduct[]
+}
+
 /**
  * Fetches real-time prices from New World using the automated token system.
  */
@@ -51,9 +68,10 @@ export async function fetchNewWorldPrices(
       response = await makeSearchRequest(searchTerm, token)
     }
 
-    const products = response.body.products || []
+    const body = response.body as NewWorldSearchResponse
+    const products = body.products || []
 
-    return products.map((p: any) => {
+    return products.map((p) => {
       const simpleId = p.productId.split('-')[0]
       return {
         product_name: p.name,

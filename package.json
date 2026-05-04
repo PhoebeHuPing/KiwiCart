@@ -14,7 +14,7 @@
     "build:client": "vite build",
     "build:server": "esbuild --packages=external --platform=node --format=esm --outfile=dist/server.js --bundle server/index.ts",
     "test": "vitest",
-    "knex": "knex --knexfile ./server/db/knexfile.js",
+    "knex": "NODE_OPTIONS='--import tsx' knex --knexfile ./server/db/knexfile.ts",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier -w '**/*.{js,jsx,ts,tsx}'",
     "render:build": "npm install && npm run build && npm prune --omit=dev && NODE_ENV='production' npm run knex migrate:latest",

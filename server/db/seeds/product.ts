@@ -1,8 +1,6 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export const seed = async function (knex) {
+import type { Knex } from 'knex'
+
+export async function seed(knex: Knex): Promise<void> {
   await knex('prices').del()
   await knex('products').del()
   await knex('supermarkets').del()
