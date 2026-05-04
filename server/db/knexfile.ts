@@ -1,10 +1,11 @@
 import * as Path from 'node:path'
 import * as URL from 'node:url'
+import type { Knex } from 'knex'
 
 const __filename = URL.fileURLToPath(import.meta.url)
 const __dirname = Path.dirname(__filename)
 
-export default {
+const config: { [key: string]: Knex.Config } = {
   development: {
     client: 'sqlite3',
     useNullAsDefault: true,
@@ -12,7 +13,7 @@ export default {
       filename: Path.join(__dirname, 'dev.sqlite3'),
     },
     pool: {
-      afterCreate: (conn, cb) => conn.run('PRAGMA foreign_keys = ON', cb),
+      afterCreate: (conn: any, cb: any) => conn.run('PRAGMA foreign_keys = ON', cb),
     },
   },
 
@@ -29,7 +30,7 @@ export default {
       directory: Path.join(__dirname, 'seeds'),
     },
     pool: {
-      afterCreate: (conn, cb) => conn.run('PRAGMA foreign_keys = ON', cb),
+      afterCreate: (conn: any, cb: any) => conn.run('PRAGMA foreign_keys = ON', cb),
     },
   },
 
@@ -37,7 +38,7 @@ export default {
     client: 'postgresql',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: Number(process.env.DB_PORT) || 5432,
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
@@ -49,3 +50,5 @@ export default {
     },
   },
 }
+
+export default config

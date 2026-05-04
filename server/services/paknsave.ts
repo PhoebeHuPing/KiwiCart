@@ -29,6 +29,23 @@ async function getPaknsaveToken(): Promise<string> {
   }
 }
 
+interface PaknsaveProduct {
+  productId: string
+  name: string
+  images?: {
+    primaryImages?: {
+      '400px'?: string
+    }
+  }
+  singlePrice?: {
+    price?: number
+  }
+}
+
+interface PaknsaveSearchResponse {
+  products: PaknsaveProduct[]
+}
+
 /**
  * Fetches real-time prices from Pak'nSave using the automated token system.
  */
@@ -47,9 +64,10 @@ export async function fetchPaknsavePrices(searchTerm: string): Promise<PriceComp
       response = await makeSearchRequest(searchTerm, token)
     }
 
-    const products = response.body.products || []
+    const body = response.body as PaknsaveSearchResponse
+    const products = body.products || []
     
-    return products.map((p: any) => {
+    return products.map((p) => {
       const simpleId = p.productId.split('-')[0]
       return {
         product_name: p.name,
