@@ -19,6 +19,22 @@ export async function getComparePrices(
   return response.body
 }
 
+export async function getSupermarkets() {
+  const response = await request.get(`${rootURL}/supermarkets`)
+  return response.body
+}
+
+export async function getNearbySupermarkets(
+  lat: number,
+  lng: number,
+  radius = 5,
+) {
+  const response = await request
+    .get(`${rootURL}/nearby`)
+    .query({ lat, lng, radius })
+  return response.body
+}
+
 // 模拟获取单个商品的详细信息（目前为空）
 export async function getProductById(id: number): Promise<Product> {
   const response = await request.get(`${rootURL}/${id}`)

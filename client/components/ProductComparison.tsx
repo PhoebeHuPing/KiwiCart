@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useDebounce } from 'use-debounce'
 import { getComparePrices } from '../apis/products'
+import StoreMap from './StoreMap'
 import { PriceComparisonData } from '../../models/products'
 
 interface GroupedProduct {
@@ -343,15 +344,7 @@ function ProductComparison() {
                 <span className="text-xl">🗺️</span> Nearby Stores
               </h3>
               <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative border border-gray-100">
-                {/* 暂时占位的地图提示 */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                  <p className="text-gray-400 text-sm">
-                    Interactive Map Coming Soon!
-                  </p>
-                  <p className="text-[10px] text-gray-300 mt-2 uppercase tracking-widest">
-                    Auckland Area
-                  </p>
-                </div>
+                <StoreMap />
               </div>
             </div>
 
