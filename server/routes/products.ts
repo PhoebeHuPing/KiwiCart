@@ -34,6 +34,34 @@ router.get('/compare', async (req, res) => {
   }
 })
 
+router.get('/supermarkets', async (req, res) => {
+  try {
+    const supermarkets = await db.getSupermarkets()
+    res.json(supermarkets)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send('Something went wrong')
+  }
+})
+
+router.get('/nearby', async (req, res) => {
+  try {
+    const lat = parseFloat(req.query.lat as string)
+    const lng = parseFloat(req.query.lng as string)
+    const radius = parseFloat((req.query.radius as string) || '5')
+
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).send('Invalid coordinates')
+    }
+
+    const supermarkets = await db.getNearbySupermarkets(lat, lng, radius)
+    res.json(supermarkets)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send('Something went wrong')
+  }
+})
+
 router.get('/', async (req, res) => {
   try {
     const products = await db.getProducts()
