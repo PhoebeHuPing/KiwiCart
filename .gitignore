@@ -64,3 +64,6 @@ debug-request.ts
 
 # Sensitive JSON files
 *.local.json
+
+# Internal planning/notes docs (keep local, do not upload)
+docs/2026-08-27-optimization-and-ai-plan.md
