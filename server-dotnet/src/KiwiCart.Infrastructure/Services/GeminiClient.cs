@@ -89,6 +89,8 @@ public class GeminiClient : IGeminiClient
                 throw new GeminiApiException("Gemini API response contained no text output.");
             }
 
+            LogTokenUsage(doc.RootElement);
+
             return text.Trim();
         }
         catch (GeminiApiException)
@@ -137,4 +139,35 @@ public class GeminiClient : IGeminiClient
 
         return sb.Length == 0 ? null : sb.ToString();
     }
+
+    /// <summary>
+    /// Log token usage from the response's <c>usageMetadata</c> block for
+    /// billing/quota visibility (plan requirement). Tolerant of a missing
+    /// block or fields — older/edge responses may omit it, so absence is
+    /// logged at debug rather than treated as an error.
+    /// </summary>
+    private void LogTokenUsage(JsonElement root)
+    {
+        if (!root.TryGetProperty("usageMetadata", out var usage)
+            || usage.ValueKind != JsonValueKind.Object)
+        {
+            _logger.LogDebug("Gemini response contained no usageMetadata; token usage unknown.");
+            return;
+        }
+
+        var promptTokens = GetIntOrDefault(usage, "promptTokenCount");
+        var candidateTokens = GetIntOrDefault(usage, "candidatesTokenCount");
+        var totalTokens = GetIntOrDefault(usage, "totalTokenCount");
+
+        _logger.LogInformation(
+            "Gemini token usage: prompt={PromptTokens}, candidates={CandidateTokens}, total={TotalTokens}, model={Model}",
+            promptTokens, candidateTokens, totalTokens, _options.Model);
+    }
+
+    private static int GetIntOrDefault(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out var value)
+        && value.ValueKind == JsonValueKind.Number
+        && value.TryGetInt32(out var result)
+            ? result
+            : 0;
 }

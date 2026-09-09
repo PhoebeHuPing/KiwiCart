@@ -4,6 +4,7 @@ using System.Text.Json;
 using KiwiCart.Core.DTOs;
 using KiwiCart.Core.Exceptions;
 using KiwiCart.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -70,6 +71,57 @@ public class GeminiClientTests
         Assert.Equal("Hello world", result);
     }
 
+    [Fact]
+    public async Task GenerateContentAsync_LogsTokenUsage_WhenUsageMetadataPresent()
+    {
+        var responseJson = JsonSerializer.Serialize(new
+        {
+            candidates = new[]
+            {
+                new { content = new { parts = new[] { new { text = "ok" } } } }
+            },
+            usageMetadata = new
+            {
+                promptTokenCount = 12,
+                candidatesTokenCount = 8,
+                totalTokenCount = 20
+            }
+        });
+
+        var logger = new Mock<ILogger<GeminiClient>>();
+        var client = CreateClient(HttpStatusCode.OK, responseJson, ValidOptions, logger.Object);
+
+        await client.GenerateContentAsync("hi");
+
+        // Verify an Information-level log carrying the token counts was emitted.
+        logger.Verify(l => l.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("token usage")),
+            It.IsAny<Exception?>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GenerateContentAsync_Succeeds_WhenUsageMetadataMissing()
+    {
+        // No usageMetadata block: must not throw, still returns the text.
+        var responseJson = JsonSerializer.Serialize(new
+        {
+            candidates = new[]
+            {
+                new { content = new { parts = new[] { new { text = "no usage" } } } }
+            }
+        });
+
+        var client = CreateClient(HttpStatusCode.OK, responseJson, ValidOptions);
+
+        var result = await client.GenerateContentAsync("hi");
+
+        Assert.Equal("no usage", result);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
@@ -111,7 +163,8 @@ public class GeminiClientTests
     }
 
     private static GeminiClient CreateClient(
-        HttpStatusCode status, string content, GeminiOptions options)
+        HttpStatusCode status, string content, GeminiOptions options,
+        ILogger<GeminiClient>? logger = null)
     {
         var handler = new Mock<HttpMessageHandler>();
         handler.Protected()
@@ -133,6 +186,6 @@ public class GeminiClientTests
         return new GeminiClient(
             factory.Object,
             Options.Create(options),
-            NullLogger<GeminiClient>.Instance);
+            logger ?? NullLogger<GeminiClient>.Instance);
     }
 }
