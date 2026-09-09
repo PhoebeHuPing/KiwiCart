@@ -52,3 +52,23 @@ export interface BasketComparisonResult {
     subtotal: number
   }[]
 }
+
+/**
+ * One ingredient extracted by the AI meal-plan assistant, paired with the
+ * cheapest matching product across supermarkets (null when no match found).
+ * Mirrors the backend `MealPlanItem` DTO.
+ */
+export interface MealPlanItem {
+  ingredient: string
+  cheapest: PriceComparisonData | null
+}
+
+/**
+ * Result of an AI meal plan: the extracted ingredients with their cheapest
+ * matches, plus the sum of those cheapest prices. Mirrors the backend
+ * `MealPlanResponse` DTO (`POST /api/v1/ai/meal-plan`).
+ */
+export interface MealPlanResponse {
+  items: MealPlanItem[]
+  estimated_total: number
+}
