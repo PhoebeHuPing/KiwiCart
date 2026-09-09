@@ -11,6 +11,8 @@ using KiwiCart.Infrastructure.Services;
 using KiwiCart.Infrastructure.Repositories;
 using KiwiCart.Core.Interfaces;
 using KiwiCart.Core.DTOs;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
@@ -218,7 +220,21 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.Configure<GeminiOptions>(
     builder.Configuration.GetSection(GeminiOptions.SectionName));
 builder.Services.AddScoped<IGeminiClient, GeminiClient>();
-builder.Services.AddScoped<IMealPlanService, MealPlanService>();
+
+// Meal-plan response cache (Phase 1.4). The concrete planner is registered
+// directly, then wrapped by a caching decorator so identical prompts within
+// the TTL skip the billed Gemini call and the price fan-out. Size limit keeps
+// the free-text key space bounded; each entry has Size = 1.
+var mealPlanCacheSection = builder.Configuration.GetSection(MealPlanCacheOptions.SectionName);
+builder.Services.Configure<MealPlanCacheOptions>(mealPlanCacheSection);
+var mealPlanCacheOptions = mealPlanCacheSection.Get<MealPlanCacheOptions>() ?? new MealPlanCacheOptions();
+builder.Services.AddMemoryCache(o => o.SizeLimit = mealPlanCacheOptions.MaxEntries);
+builder.Services.AddScoped<MealPlanService>();
+builder.Services.AddScoped<IMealPlanService>(sp => new CachingMealPlanService(
+    sp.GetRequiredService<MealPlanService>(),
+    sp.GetRequiredService<IMemoryCache>(),
+    sp.GetRequiredService<IOptions<MealPlanCacheOptions>>(),
+    sp.GetRequiredService<ILogger<CachingMealPlanService>>()));
 
 // Auth0 JWT Authentication
 builder.Services.AddAuthentication("Bearer")
